@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="SongCreator: Lyrics-based Universal Song Generation">
+  <meta name="keywords" content="Song generation,Song editing,Language Model,Generative AI,Diffusion Model">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SongCreator</title>
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f5419b2b7338daa3640907a7c3252e0e";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+    
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L7749G0HJZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L7749G0HJZ');
+</script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body" style="padding-bottom: 24px;">
+    <div class="container  is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">SongCreator: Lyrics-based Universal Song Generation</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              Anonymous Author(s)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video width="1080" height="auto" controls=""> 
+        <source src="./static/videos/demo_video.mp4" type="video/mp4" /> Your browser does not support the video tag.
+       </video>
+      <h2 class="subtitle has-text-centered">
+        A 2-minute video introducing VoxInstruct.
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+
+<section id="abs" class="section" style="padding-top: 0px;">
+  <div class="container  is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Music is an integral part of human culture, embodying human intelligence and creativity, of which songs compose an essential part.
+            While various aspects of song generation have been explored by previous works, such as singing voice, vocal composition and instrumental arrangement, etc., generating songs with both vocals and accompaniment given lyrics remains a significant challenge, hindering the application of music generation models in the real world.
+            In this light, we propose <b>SongCreator</b>, a <b></b>song-generation</b> system designed to tackle this challenge. 
+            The model features two novel designs: <b>a meticulously designed dual-sequence language model (DSLM) to capture the information of vocals and accompaniment for song generation, and an additional attention mask strategy for DSLM, which allows our model to understand, generate and edit songs, making it suitable for various song-related generation tasks.</b>
+            Extensive experiments demonstrate the effectiveness of SongCreator by achieving state-of-the-art or competitive performances on <b>all eight tasks</b>. 
+            Notably, it surpasses previous works by <b>a large margin</b> in <b>lyrics-to-song and lyrics-to-vocals</b>. 
+            Additionally, it is able to independently control the acoustic conditions of the vocals and accompaniment in the generated song through different prompts, exhibiting its potential applicability.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop is-centered has-text-centered">
+    <div class="hero-body">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <img src="./static/image/architecture.png" class="interpolation-image"
+            alt="Interpolate start reference image." />
+          <h2 class="subtitle has-text-centered">
+            The overview of SongCreator.
+          </h2>
+        </div>
+      </div> 
+    </div>
+  </div>
+</section>
+
+
+<section id="toc" class="section" style="padding-top: 0px;">
+  <div class="container  is-fluid">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Table of Contents</h2>
+        <div class="is-centered">
+          <ul>
+            <li><a href="#SongCreator_genration"><b>SongCreator: Universal Song Generation</b></a></li>
+            <li><a href="#SongCreator_prompt"><b>SongCreator: Controllable Song Generation</b></a></li>
+            <li><a href="#SongCreator_editing"><b>SongCreator: Song Editing</b></a></li>
+            <li><a href="#SongCreator_continue"><b>SongCreator: Music Continuation</b></a></li>
+            <li><a href="#SongCreator_more"><b>SongCreator: More Attempts in Generating Songs without Lyrics</b></a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="SongCreator_genration" class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">SongCreator: Universal Song Generation</h2>
+          <div class="content">
+            <p>To demonstrate the diverse and powerful generation capabilities of SongCreator, we present various samples about universal song generation.</p>
+          </div>
+        </div>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <table class="table" style="background-color: transparent;">
+          <thead>
+            <tr>
+              <th align="center"><strong></span>Lyrics</strong></th>
+              <th align="center"><strong></span>Pre-determined Vocal</strong></th>
+              <th align="center"><strong></span>Pre-determined Accompaniment</strong></th>
+              <th align="center"><strong><span class="icon"><i class="fas fa-magic"></i></span>SongCreator</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+      
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Lyrics-to-Song </td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">So if I let down my guard, if I rip up my scars, and I show you my heart, am I beautiful? If I tell you my secrets, show my dark and my demons, tell me, what do you see? Am I beautiful?</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/7.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Maybe I can, we just come meet for dinner, at benningan's, I never meant to make you cry, is it too late to try, don't you remember what we said, as long as we stick together.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">Back on my feet, back on my feet again, I gotta roll the dice, back on my feet, no time to feel the pain, back on my feet, back on my feet again, yeah yeah yeah yeah, back on my feet, no time to feel the pain.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">Well make it to the end, and I can probably have been a better, better friend, I just want to start again, could we go back to when, we used to listen to radiohead.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">We never sleep, we never try, when you are with me, I wanna stay, I wanna stay here with you (ooh), cause you make me feel like, I could be driving you all night, and I'll find your lips in the streetlights.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">And don't take this from me, I've been fading away, memories are turning to gray, but every step that I take, the closer I get, to finding there's more to me, than what these eyes have seen, it's within my reach, and I'll take it all.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/8.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Stuck in your ways, where will you go? I was the one who held you up, whenever you were low, I was the only one who refused to see (refuse to see).</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/6.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">Got you on my mind, back on my feet, back on my feet again, I gotta roll the dice, back on my feet, no time to feel the pain.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Can't seem to get my mind off of you, back here at home, there's nothin' to do, now that I'm away, I wish I'd stayed.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/9.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Baby and now we're six months older and everything you want, and everything you see is out of reach, not good enough I don't know what the hell you want from me.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/10.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">I've become so numb, I can't feel you there, become so tired, so much more aware, I'm becoming this, all I want to do is be more like me, and be less like you.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-song/11.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Lyrics-to-Vocals </td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">Cause I'm trying, trying, to set me free, will you let me know, if you have the key.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-vocals/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Even though you hurt me, I feel blessed love, baby, I'm your puppet on a string, making me tumble and swing.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-vocals/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Giving me the greatest gift you can, saying yes and now our life begin, choosing you daily, so take my hand now.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-vocals/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">Like a pocket knife shadow, I am confused about who I am, I see your shadow, now I am not afraid to hurt you, I have never quite hurt someone like this before.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-vocals/6.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">Stuck in your ways, where will you go? I was the one who held you up, whenever you were low, I was the only one who refused to see (refuse to see).</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-vocals/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Don't know why I run, don't know why I hide, don't know why I try to keep these issues. Running through my mind all to myself, don't know what I want, don't know who I am, don't even remember who I used to be, before the storm came crashing down.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/lyrics-to-vocals/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Accompaniment-to-Song</td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">Too far from home, all I do is searching and wondering, never knew the one I hoped for is here waiting, do you feel the same?</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/accompaniment-to-song/1_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/accompaniment-to-song/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">Was it something that I said? I tried my best, yeah, all for you. I can see it in your eyes, the way you lie, I'm such a fool.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/accompaniment-to-song/2_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/accompaniment-to-song/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Just a smiling face, I can see she's headed for a tragedy, I wanna save the girl, but it's not my place.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/accompaniment-to-song/3_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/accompaniment-to-song/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">And don't forget the lows everybody's got a story no one knows no one knows so just let them play until the credits roll.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/accompaniment-to-song/4_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/accompaniment-to-song/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Oh, could I take care? For the only one i've dreamed about, until you listened my last goodbye.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/accompaniment-to-song/5_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/accompaniment-to-song/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Will you notice me, are you what I need, I'm trying, trying, to set me free;</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/accompaniment-to-song/6_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/accompaniment-to-song/6.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Vocals-to-Song</td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">Don't know why I run, don't know why I hide, don't know why I try to keep these issues, running through my mind all to myself, don't know what I want, don't know who I am, don't even remember who I used to be, before the storm came crashing down.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-to-song/1_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-to-song/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+        <td width="30%" style="text-align: left;">One too many times, I'm the one to take the burden, oh, you know I've tried, but got nothing, I got nothing;</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-to-song/3_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-to-song/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">Enough, I've been waiting forever for you to change, I can't do this forever not one more day, never wanted to lose you this way, but you're stuck."</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-to-song/2_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-to-song/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr><tr>
+      <tr>
+        <td width="30%" style="text-align: left;">I've got better things to do, and better things to listen to, than all your ranting and raving on me, it's all of the time now, and it's too late for you to find reality here, now I want you out of my life;</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-to-song/4_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-to-song/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr><tr>
+        <td width="30%" style="text-align: left;">You're stuck in my head, stuck on my heart, stuck on my body, I wanna go; get outta here, I'm sick of the party, I'd run away, I'd run away with you</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-to-song/5_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-to-song/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr><tr>
+        <td width="30%" style="text-align: left;">"Even though it hurts and I still feel shame, best friends try to warn you about the game.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-to-song/6_a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-to-song/6.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+            </tbody>
+        </table>
+      </div>
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <a href="#toc" class="button is-primary">Go Back to Table of Contents</a>
+                </div>
+              </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<section id="SongCreator_prompt" class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">SongCreator: Controllable Song Generation</h2>
+          <div class="content">
+            <p>To demonstrate the diverse and powerful generation capabilities of SongCreator, we present various samples about controllable song generation.</p>
+          </div>
+        </div>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <table class="table" style="background-color: transparent;">
+          <thead>
+            <tr>
+              <th align="center"><strong></span>Lyrics</strong></th>
+              <th align="center"><strong></span>Vocal Prompt</strong></th>
+              <th align="center"><strong></span>Accompaniment Prompt</strong></th>
+              <th align="center"><strong><span class="icon"><i class="fas fa-magic"></i></span>SongCreator</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+      
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Lyrics-to-Song with vocal prompt and accompaniment prompt from the same segment</td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">The life I planned for me, and my dreams, I am losing control, of my destiny, it feels like I'm falling and that's what it's like to believe, so I'm letting go, giving in to your gravity.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/1v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/1a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/same-prompt/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">And every second I waste is more than I can take, I've become so numb, I can't feel you there, become so tired, so much more aware, I'm becoming this, all I want to do is be more like me, and be less like you.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/4v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/4a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/same-prompt/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      
+      <tr>
+        <td width="30%" style="text-align: left;">I was a weary one but you saved me, you picked me up and put me on your shoulders, and brought me to the tree;</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/2v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/2a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/same-prompt/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">You can see in his eyes, he's in love with her, you don't wanna be the one to cause more hurt, the damage is done, don't make it worse.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/3v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/3a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/same-prompt/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+      
+      <tr>
+        <td width="30%" style="text-align: left;">Only doing things out of frustration, trying to make it work, but man, these times are hard, she needs me now, but I can't seem to find the time.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/5v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/same-prompt/5a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/same-prompt/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Lyrics-to-Song with vocal prompt and accompaniment prompt from different segment</td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Draw me angels with flapping wings, ooh... Strange machines, cos after the daekness is sunrise, there'll be hugs and teary smiles.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/1v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/1a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/different-prompt/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">If I get a second chance, I'll stop fighting jews, and I hope that they'll be nice to me too, I was so focused on promoting, my own aryan nation, I forgot about my friendship with jews.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/2v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/2a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/different-prompt/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Don't wish too hard, because they may come true, and you can't help them, you don't know what you might have set upon yourself, china in your hand.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/3v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/3a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/different-prompt/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Only doing things out of frustration, trying to make it work, but man, these times are hard, she needs me now, but I can't seem to find the time.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/4v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/4a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/different-prompt/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+
+      <tr>
+        <td width="30%" style="text-align: left;">Black hole sun, won't you come, and wash away the rain? Black hole sun, won't you come, won't you come.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/5v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/different-prompt/5a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/different-prompt/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Lyrics-to-Song with only vocal prompt</td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">And its unrelenting chase, I was on the edge of deception, caught up in my own hesitation, until your love took over me.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-vocals/1v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-vocals/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">I'am take a sad girl, turn into a bad girl, even at your worst, you're better than the rest, find someone to kiss tonight, underneath the flashing lights, we gon' have the time of our lives.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-vocals/2v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-vocals/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Tell you what I want, tell me what you need, the things that I desire, the things that make you bleed, I'll lift the pain away, just give me all of you, I'll build it up then tear it if you want me to, but no, I won't do it, my body's in for the moment, i wanna feel you, but i don't wanna take.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-vocals/3v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-vocals/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Nothing can stop me, I'm the champion, I've been waiting for you, I've been waiting for you, when the shadows come and cover the horizon.</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-vocals/4v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-vocals/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">His mind full of deception, the prize he had no care for, to win was his desire, I stand before these walls, neglected but watched over.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-vocals/5v.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-vocals/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Lyrics-to-Song with only bgm prompt</td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;">But am I gonna get enough from you, I don't know what it is about you, but I can't keep my eyes off you, let me know if you feel it too, I wanna make you mine right now, baby let me show you how.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-accompaniment/1a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-accompaniment/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">When the rain, is blowing in your face, and the whole world, is on your case; I could offer you, a warm embrace.</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-accompaniment/2a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-accompaniment/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+      <tr>
+        <td width="30%" style="text-align: left;">Yeah, they're making us crazy, don't give up on me, baby. Oh, these times are hard, yeah, they're making us crazy, don't give up on me, baby, oh, these times are hard; yeah, they're making us crazy, don't give up on me, baby;
+        </td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-accompaniment/3a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-accompaniment/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">What brings me back to this? Is this something I need, or have I done something wrong? how did we even get here.
+        </td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-accompaniment/4a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-accompaniment/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Aa-aa-ah, losing all emotions, I did'nt feel nothing, in need of attention but nobody's looking.
+
+        </td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/only-accompaniment/5a.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/only-accompaniment/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+      
+            </tbody>
+        </table>
+      </div>
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <a href="#toc" class="button is-primary">Go Back to Table of Contents</a>
+                </div>
+              </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="SongCreator_editing" class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">SongCreator: Song Editing</h2>
+          <div class="content">
+            <p>To demonstrate the diverse and powerful generation capabilities of SongCreator, we present various samples about song editing.</p>
+          </div>
+        </div>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <table class="table" style="background-color: transparent;">
+          <thead>
+            <tr>
+              <th align="center"><strong></span>Original Lyrics</strong></th>
+              <th align="center"><strong></span>Original Song</strong></th>
+              <th align="center"><strong></span>Edited Lyrics</strong></th>
+              <th align="center"><strong><span class="icon"><i class="fas fa-magic"></i></span>SongCreator Edited Song</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+      
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Song Editing</td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">I made the right choice running away, all those years ago, I need a smoke pull over, haven't taken a drag since seventeen, when I thought you knew me better.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/1g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">I made the right choice running away, all those years ago, <b>let's stop for a moment, I crave a cigarette, it's been ages</b> since seventeen, when I thought you knew me better.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Black and white, fever burning in the night, just a shade, in a room <b>without a lightl, see your face,</b> can't remember where I am, outer space.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/8g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">Black and white, fever burning in the night, just a shade, in a room, can't remember where I am, outer space.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/8.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">I'am take a sad girl, turn into a bad girl, even at your worst, you're better than the rest.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/4g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">I'am take a sad girl, turn into a <b>queen</b>, even at your worst, you're better than the rest.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">A voice to call the dead from their sleep, the wonder of it all is that you found me.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/2g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">A voice to call the <b>souls back to waking life, marveling at the serendipity</b> all is that you found me.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">But we always have been friends, I miss you, both we have to grow, both we got mature.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/3g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">But we always have been friends, I miss you, <b>now we both must grow and learn,</b> both we got mature.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">She's in line at the dole with her head held high.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/5g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">She's in line <b>waiting patiently</b> at the dole with her head held high.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Never let me go, strange love.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/6g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">Never let me go, <b>hold me close in your arms, cherish every moment together,</b> strange love.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/6.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">I can't pull myself away, I can't pull myself away.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/song-edit/7g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">I can't pull myself away, <b>trapped by this magnetic force, drawn irresistibly closer, closer despite my efforts, </b>I can't pull myself away.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/song-edit/7.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Vocals Editing</td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">And the people bowed and prayed, to the neon god they made, and the sign flashed out its warning, and the words that it was forming.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit/1g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">And the people bowed and prayed, to the <b>bright idol they raised, in the light that boldly gleamed</b>, and the words that it was forming.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">She's in line at the dole with her head held high.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit/2g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">She's in line <b>waiting patiently</b> at the dole with her head held high.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">So if I let down my guard, if I rip up my scars; and I show you my heart; am I beautiful? <b>If I tell you my secrets, show my dark and my demons.</b> Tell me, what do you see? am I beautiful?
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit/3g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">So if I let down my guard, if I rip up my scars, and I show you my heart, am I beautiful? Tell me, what do you see? Am I beautiful?
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Fools said I, you do not know, silence like a cancer grows, hear my words that I might teach you, take my arms that I might reach you.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit/4g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">Fools said I, you do not know, silence like a cancer grows, hear my words that I might teach you, take <b>these hands</b> that I might reach you.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Vocals Editing in Song </td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">We had the songs that we sang along to, you had the moves to make me dance with you, I always saw you reaching and catching stars, we had the thing that everyone wanted, hung on your sleeve, you wore your heart on it, did you get out?
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit-in/3g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">We had the songs that we sang along to, you had the moves to make me dance with you, <b>you seemed to grasp at dreams, pulling them close, we shared a magic that all</b> wanted, hung on your sleeve, you wore your heart on it, did you get out?
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit-in/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">You're stuck in my head, stuck on my heart, stuck on my body, I wanna go, get outta here, I'm sick of the party, I'd run away, I'd run away with you.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit-in/1g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">You're stuck in my head, stuck on my heart, stuck on my body, I wanna go, get outta here, I'm sick of the party, I'd <b>escape this noise,</b> I'd run away with you.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit-in/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">Telling me I'm on my own, do I have what it takes for this? (Will I fly? will I fall?) At the edge of all I've ever wanted, head is spinning stuck in a tug of war, tell me is it meant to be this way.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit-in/2g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">Telling me I'm on my own, do I have what it takes for this? (will I fly? will I fall?) <b>Ready to leap beyond what I've dreamed, caught between hope and a hard place;</b> tell me is it meant to be this way.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit-in/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">In restless dreams I walked alone, narrow streets of cobblestone, neath the halo of a street lamp, I turned my collar to the cold and damp.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit-in/4g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">In restless dreams I walked alone, <b>silent paths of old stone, under a faint street light’s glow</b>, I turned my collar to the cold and damp.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit-in/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">When my eyes were stabbed, by the flash of a neon light, that split the night, and touched the sound of silence.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/vocals-edit-in/5g.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="30%" style="text-align: left;">When my eyes were stabbed, by the flash of a neon light, that split the <b>darkness, it</b> reached the sound of silence.
+        </td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/vocals-edit-in/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+            </tbody>
+        </table>
+      </div>
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <a href="#toc" class="button is-primary">Go Back to Table of Contents</a>
+                </div>
+              </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<section id="SongCreator_continue" class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">SongCreator: Music Continuation</h2>
+          <div class="content">
+            <p>To demonstrate the diverse and powerful generation capabilities of SongCreator, we present various samples about music continuation.</p>
+          </div>
+        </div>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <table class="table" style="background-color: transparent;">
+          <thead>
+            <tr>
+              <th align="center"><strong></span>ID</strong></th>
+              <th align="center"><strong></span>Music Prompt</strong></th>
+              <th align="center"><strong><span class="icon"><i class="fas fa-magic"></i></span>SongCreator</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+      
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Music Continuation</td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">1</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/bgm-continue/1p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/bgm-continue/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">2</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/bgm-continue/2p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/bgm-continue/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">3</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/bgm-continue/3p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/bgm-continue/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">4</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/bgm-continue/4p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/bgm-continue/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;">5</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/bgm-continue/5p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/bgm-continue/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+            </tbody>
+        </table>
+      </div>
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <a href="#toc" class="button is-primary">Go Back to Table of Contents</a>
+                </div>
+              </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="SongCreator_more" class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">SongCreator: More Attempts in Generating Songs without Lyrics</h2>
+          <div class="content">
+            <p>We present some interesting examples of song generation without lyrics. However, please note that since SongCreator were not specifically optimezed for unconditional generation, the vocal content is often akin to babbling.</p>
+          </div>
+        </div>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <table class="table" style="background-color: transparent;">
+          <thead>
+            <tr>
+              <th align="center"><strong></span>Vocal Prompt</strong></th>
+              <th align="center"><strong></span>Pre-determined Accompaniment</strong></th>
+              <th align="center"><strong></span>Song Prompt</strong></th>
+              <th align="center"><strong><span class="icon"><i class="fas fa-magic"></i></span>SongCreator</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+      
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Song Continuation</td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/1p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/1.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/2p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/2.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/3p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/3.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Vocals Continuation</td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/4p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/4.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/5.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/5.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/6p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;">-</td>
+
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/6.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+
+      <tr>
+        <td width="30%" style="text-align: left;"> <span class="icon"><i class="fas fa-magic"></i></span>Accompaniment-to-Song (no lyrics)</td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/7p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/7.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/8p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/8.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/9p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/9.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      <tr>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+          <source src="static/audio_sample/overview/more/10p.wav"
+            type="audio/wav">
+        </audio></td>
+        <td width="14%" style="text-align: center;">-</td>
+        <td width="14%" style="text-align: center;"><audio controls="">
+            <source src="static/audio_sample/overview/more/10.wav"
+              type="audio/wav">
+          </audio></td>
+      </tr>
+      
+            </tbody>
+        </table>
+      </div>
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <a href="#toc" class="button is-primary">Go Back to Table of Contents</a>
+                </div>
+              </div>
+    </div>
+  </div>
+</section>
