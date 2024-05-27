@@ -132,6 +132,7 @@
             <li><a href="#SongCreator_editing"><b>SongCreator: Song Editing</b></a></li>
             <li><a href="#SongCreator_continue"><b>SongCreator: Music Continuation</b></a></li>
             <li><a href="#SongCreator_more"><b>SongCreator: More Attempts in Generating Songs without Lyrics</b></a></li>
+            <li><a href="#tasks"><b>Detailed Description of All Tasks</b></a></li>
           </ul>
         </div>
 
@@ -1231,7 +1232,7 @@
         <div class="column is-four-fifths">
           <h2 class="title is-3">SongCreator: More Attempts in Generating Songs without Lyrics</h2>
           <div class="content">
-            <p>We present some interesting examples of song generation without lyrics. However, please note that since SongCreator were not specifically optimezed for unconditional generation, the vocal content is often akin to babbling.</p>
+            <p>We present some interesting examples of song generation without lyrics. However, please note that since SongCreator were not specifically optimized for unconditional generation, the vocal content is often akin to babbling.</p>
           </div>
         </div>
       </div>
@@ -1304,7 +1305,7 @@
       </tr>
       <tr>
         <td width="14%" style="text-align: center;"><audio controls="">
-          <source src="static/audio_sample/overview/more/5.wav"
+          <source src="static/audio_sample/overview/more/5p.wav"
             type="audio/wav">
         </audio></td>
         <td width="14%" style="text-align: center;">-</td>
@@ -1381,6 +1382,99 @@
           </audio></td>
       </tr>
       
+            </tbody>
+        </table>
+      </div>
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <a href="#toc" class="button is-primary">Go Back to Table of Contents</a>
+                </div>
+              </div>
+    </div>
+  </div>
+</section>
+
+<section id="tasks" class="hero">
+  <div class="hero-body">
+    <div class="container is-fluid">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Detailed Description of All Tasks</h2>
+          <div class="content">
+            <p>For each of the above tasks, we provide a detailed task description.</p>
+          </div>
+        </div>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <table class="table" style="background-color: transparent;">
+          <thead>
+            <tr>
+              <th align="center"><strong></span>Tasks</strong></th>
+              <th align="center"><strong></span>Description</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+      
+            <tr>
+              <td width="14%" style="text-align: center;">Lyrics-to-Song</td>
+              <td width="30%" style="text-align: left;">This task aims to generate a complete song that includes harmoniously integrated vocal and accompaniment from lyrics.
+                SongCreator supports to control various acoustic conditions in the generated song by providing optional prompts.
+                The vocal prompt can control speaker, vocal melody, and tempo, while the accompaniment prompt can control instruments, musical melody, and rhythm.
+                The vocal prompt and accompaniment prompt can either be present simultaneously, exist individually, or be absent altogether.</td>
+            </tr>
+
+            <tr>
+              <td width="14%" style="text-align: center;">Lyrics-to-Vocals</td>
+              <td width="30%" style="text-align: left;">This task aims to generate the vocals without accompaniment based on the given lyrics.
+                In this case, the vocal prompt can be provided to control the speaker, melody, and tempo of the generated vocals.</td>
+            </tr>
+
+            <tr>
+              <td width="14%" style="text-align: center;">Accompaniment-to-Song</td>
+              <td width="30%" style="text-align: left;">The purpose of this task is to supplement the vocal track of a song based on the given lyrics for a pre-determined accompaniment track.
+                The vocal track in generated song should complement the input accompaniment track to create a coherent song.
+                Similar to lyrics-to-vocals, the generated vocals can also be controlled using the vocal prompt.</td>
+            </tr>
+
+            <tr>
+              <td width="14%" style="text-align: center;">Vocals-to-Song</td>
+              <td width="30%" style="text-align: left;">Contrary to the accompaniment-to-song task, the purpose of this task is to generate harmonious accompaniment for the input vocal track and combine them to create a coherent song.</td>
+            </tr>
+
+            <tr>
+              <td width="14%" style="text-align: center;">Song Editing</td>
+              <td width="30%" style="text-align: left;">This task requires a model to alter a segment within a song to match a target lyrics.
+                The modified segment must be coherent with the unedited parts of the original song, i.e., maintaining the speaker, instruments, melody and rhythm.</td>
+            </tr>
+
+            <tr>
+              <td width="14%" style="text-align: center;">Vocals Editing</td>
+              <td width="30%" style="text-align: left;">This task is similar to song editing, but the modification target is changed from the complete song to the vocals without accompaniment.</td>
+            </tr>
+            
+            <tr>
+              <td width="14%" style="text-align: center;">Vocals Editing in Song</td>
+              <td width="30%" style="text-align: left;">This is a unique capability of SongCreator, which modifies the content of the vocal track in a song while keeping the original accompaniment track unchanged.
+                It means that the modified vocal segment not only maintains coherence with the unedited vocal track of the original song but also harmonizes with the accompaniment in the original song.</td>
+            </tr>
+
+            <tr>
+              <td width="14%" style="text-align: center;">Music Continuation</td>
+              <td width="30%" style="text-align: left;">This task is expected to generate instrumental music, which is coherent with the accompaniment prompt in terms of instruments, melody, harmony and rhythm.</td>
+            </tr>
+
+            <tr>
+              <td width="14%" style="text-align: center;">Song Continuation</td>
+              <td width="30%" style="text-align: left;">This task is expected to generate a complete song without input lyrics, which is coherent with the song prompt in terms of instruments, speaker, melody, and rhythm.</td>
+            </tr>
+            <tr>
+              <td width="14%" style="text-align: center;">Vocals Continuation</td>
+              <td width="30%" style="text-align: left;">This task is expected to generate vocals without input lyrics, which is coherent with the vocal prompt in terms of speaker, vocal melody, and tempo.</td>
+            </tr>
+            <tr>
+              <td width="14%" style="text-align: center;">Accompaniment-to-Song (no lyrics)</td>
+              <td width="30%" style="text-align: left;">This task is similar to the accompaniment-to-song task, but instead of providing lyrics, it only offers the pre-determined accompaniment track, allowing the model to supplement the vocal track of a song.</td>
+            </tr>
             </tbody>
         </table>
       </div>
